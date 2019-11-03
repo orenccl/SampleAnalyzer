@@ -1,16 +1,17 @@
-#ifndef SIMPLESERIAL_ANALYZER_H
-#define SIMPLESERIAL_ANALYZER_H
+#ifndef C2_ANALYZER_H
+#define C2_ANALYZER_H
 
 #include <Analyzer.h>
-#include "SimpleSerialAnalyzerResults.h"
-#include "SimpleSerialSimulationDataGenerator.h"
+#include "C2AnalyzerResults.h"
+#include "C2SimulationDataGenerator.h"
 
-class SimpleSerialAnalyzerSettings;
-class ANALYZER_EXPORT SimpleSerialAnalyzer : public Analyzer2
+
+class C2AnalyzerSettings;
+class ANALYZER_EXPORT C2Analyzer : public Analyzer2
 {
 public:
-	SimpleSerialAnalyzer();
-	virtual ~SimpleSerialAnalyzer();
+	C2Analyzer();
+	virtual ~C2Analyzer();
 
 	virtual void SetupResults();
 	virtual void WorkerThread();
@@ -21,12 +22,25 @@ public:
 	virtual const char* GetAnalyzerName() const;
 	virtual bool NeedsRerun();
 
-protected: //vars
-	std::auto_ptr< SimpleSerialAnalyzerSettings > mSettings;
-	std::auto_ptr< SimpleSerialAnalyzerResults > mResults;
-	AnalyzerChannelData* mSerial;
+protected: //functions
+	void AdvanceToStartBit();
+	void GetData();
+	void GetBit(BitState& bit_state);
+	void GetByte();
+	void RecordStartStopBit();
+	void GetIns();
+	void GetLen();
+	void Wait();
 
-	SimpleSerialSimulationDataGenerator mSimulationDataGenerator;
+protected: //vars
+	std::auto_ptr< C2AnalyzerSettings > mSettings;
+	std::auto_ptr< C2AnalyzerResults > mResults;
+	AnalyzerChannelData* mC2ck;
+	AnalyzerChannelData* mC2d;
+	U8 mLen;
+	U8 mFlag;
+
+	C2SimulationDataGenerator mSimulationDataGenerator;
 	bool mSimulationInitilized;
 
 	//Serial analysis vars:
@@ -39,4 +53,4 @@ extern "C" ANALYZER_EXPORT const char* __cdecl GetAnalyzerName();
 extern "C" ANALYZER_EXPORT Analyzer* __cdecl CreateAnalyzer( );
 extern "C" ANALYZER_EXPORT void __cdecl DestroyAnalyzer( Analyzer* analyzer );
 
-#endif //SIMPLESERIAL_ANALYZER_H
+#endif //C2_ANALYZER_H
